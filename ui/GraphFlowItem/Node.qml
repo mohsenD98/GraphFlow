@@ -2,13 +2,12 @@ import QtQuick 2.12
 
 Rectangle {
   id: root
-  property alias type: header.type
   property alias name: text.text
   property int nodeIndex: -1 // اندیس Node در NodeModel
   property var user
   property bool selected
-  property var attributesList: []
   property alias attRepeater: attributesRepeater
+  property string type
 
   property color nodeHeaderColor
 
@@ -40,8 +39,6 @@ Rectangle {
     radius: root.radius
     color: nodeHeaderColor
     border.color: root.border.color
-
-    property int type
 
     Rectangle {
       anchors.left: parent.left
@@ -76,7 +73,6 @@ Rectangle {
 
   Repeater {
     id: attributesRepeater
-    model: attributesList
     delegate: Attribute {
       x: 0
       y: 25 + index * 25

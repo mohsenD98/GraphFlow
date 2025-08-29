@@ -34,6 +34,7 @@ qt_add_qml_module(GraphFlow
        ui/GraphFlowItem/Socket.qml
        ui/GraphFlowItem/Background.qml
        ui/GraphFlowItem/GraphFlowScene.qml
+       ui/GraphFlowItem/AttributeDialog.qml
        ui/NodeList.qml
 
     RESOURCES
@@ -46,6 +47,7 @@ qt_add_qml_module(GraphFlow
        ui/data/icons/add_24dp.svg
        ui/data/icons/calculate_24dp.svg
        ui/data/icons/database_24dp.svg
+       SOURCES src/FlowExecutor.h src/FlowExecutor.cpp
 
 )
 

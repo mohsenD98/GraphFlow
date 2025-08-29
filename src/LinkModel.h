@@ -9,7 +9,7 @@ struct LinkData
     int toAttributeIndex;
 };
 
-class LinkModel : public QAbstractListModel
+class FlowLinkModel : public QAbstractListModel
 {
     Q_OBJECT
 
@@ -22,7 +22,7 @@ class LinkModel : public QAbstractListModel
       ToAttributeRole
     };
 
-    explicit LinkModel( QObject *parent = nullptr );
+    explicit FlowLinkModel( QObject *parent = nullptr );
 
     int rowCount( const QModelIndex &parent = QModelIndex() ) const override;
     QVariant data( const QModelIndex &index, int role ) const override;

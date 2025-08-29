@@ -16,7 +16,7 @@ int main( int argc, char *argv[] )
   GraphController controller;
 
   qmlRegisterType<FlowNodeModel>( "GraphFlow", 1, 0, "FlowNodeModel" );
-  qmlRegisterType<LinkModel>( "GraphFlow", 1, 0, "LinkModel" );
+  qmlRegisterType<FlowLinkModel>( "GraphFlow", 1, 0, "LinkModel" );
   qmlRegisterType<NodeLibraryModel>( "GraphFlow", 1, 0, "NodeLibraryModel" );
   qmlRegisterType<NodeLibraryProxyModel>( "GraphFlow", 1, 0, "NodeLibraryProxyModel" );
 

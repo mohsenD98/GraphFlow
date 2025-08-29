@@ -1,15 +1,15 @@
 #include "LinkModel.h"
 
-LinkModel::LinkModel( QObject *parent )
+FlowLinkModel::FlowLinkModel( QObject *parent )
   : QAbstractListModel( parent ) {}
 
-int LinkModel::rowCount( const QModelIndex &parent ) const
+int FlowLinkModel::rowCount( const QModelIndex &parent ) const
 {
   Q_UNUSED( parent );
   return mLinks.size();
 }
 
-QVariant LinkModel::data( const QModelIndex &index, int role ) const
+QVariant FlowLinkModel::data( const QModelIndex &index, int role ) const
 {
   if ( !index.isValid() || index.row() >= mLinks.size() )
     return QVariant();
@@ -31,7 +31,7 @@ QVariant LinkModel::data( const QModelIndex &index, int role ) const
   }
 }
 
-QHash<int, QByteArray> LinkModel::roleNames() const
+QHash<int, QByteArray> FlowLinkModel::roleNames() const
 {
   QHash<int, QByteArray> roles;
   roles[FromNodeRole] = "fromNode";
@@ -41,14 +41,14 @@ QHash<int, QByteArray> LinkModel::roleNames() const
   return roles;
 }
 
-void LinkModel::addLink( int fromNode, int fromAttr, int toNode, int toAttr )
+void FlowLinkModel::addLink( int fromNode, int fromAttr, int toNode, int toAttr )
 {
   beginInsertRows( QModelIndex(), mLinks.size(), mLinks.size() );
   mLinks.append( { fromNode, fromAttr, toNode, toAttr } );
   endInsertRows();
 }
 
-void LinkModel::removeLink( int index )
+void FlowLinkModel::removeLink( int index )
 {
   if ( index < 0 || index >= mLinks.size() )
     return;
@@ -57,7 +57,7 @@ void LinkModel::removeLink( int index )
   endRemoveRows();
 }
 
-void LinkModel::clear()
+void FlowLinkModel::clear()
 {
   beginResetModel();
   mLinks.clear();

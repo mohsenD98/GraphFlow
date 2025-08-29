@@ -45,7 +45,7 @@ QHash<int, QByteArray> FlowNodeModel::roleNames() const
 }
 
 
-void FlowNodeModel::addNode( const QString &name, int type, int x, int y, const QString &color )
+void FlowNodeModel::addNode( const QString &name, QString type, int x, int y, const QString &color )
 {
   beginInsertRows( QModelIndex(), mNodes.size(), mNodes.size() );
   FlowNodeData node;
@@ -123,4 +123,35 @@ QVariantList FlowNodeModel::getAttributes( int nodeIndex ) const
     list.append( map );
   }
   return list;
+}
+
+void FlowNodeModel::setAttributeValue( int nodeIndex, const QString &attrName, const QVariant &val )
+{
+  if ( nodeIndex < 0 || nodeIndex >= mNodes.size() )
+    return;
+
+  for ( auto &attr : mNodes[nodeIndex].attributes )
+  {
+    if ( attr.name == attrName )
+    {
+      attr.value = val;
+      emit attributesChanged( nodeIndex );
+      return;
+    }
+  }
+}
+
+QVariant FlowNodeModel::getAttributeValue( int nodeIndex, const QString &attrName ) const
+{
+  if ( nodeIndex < 0 || nodeIndex >= mNodes.size() )
+    return QVariant();
+
+  for ( const auto &attr : mNodes[nodeIndex].attributes )
+  {
+    if ( attr.name == attrName )
+    {
+      return attr.value;
+    }
+  }
+  return QVariant();
 }

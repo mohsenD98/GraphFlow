@@ -14,11 +14,9 @@ Item {
     delegate: Node {
       id: node
       width: 150
-      height: 30 + attributesList.count * 25
       name: model.name
       type: model.type
       nodeIndex: index
-      attributesList: nodeModel.getAttributes(index)
       selected: false
       nodeHeaderColor: model.color
 
@@ -240,6 +238,16 @@ Item {
       dragSelectedNodes.end();
       selectionRect.end();
     }
+
+    onDoubleClicked: {
+      const node = getNodeAtPosition(Qt.point(mouseX, mouseY));
+      attributeDialog.openForNode(node);
+    }
+  }
+
+  AttributeDialog {
+    id: attributeDialog
+    width: 300
   }
 
   // -------------------- Functions --------------------

@@ -1,4 +1,5 @@
 #include "GraphController.h"
+#include "src/FlowExecutor.h"
 
 #include <QFile>
 #include <QJsonArray>
@@ -9,7 +10,13 @@ GraphController::GraphController( QObject *parent )
   : QObject( parent )
 {
   mFlowNodeModel = new FlowNodeModel( this );
-  mLinkModel = new LinkModel( this );
+  mFlowLinkModel = new FlowLinkModel( this );
+}
+
+void GraphController::runFlow()
+{
+  FlowExecutor executor( mFlowNodeModel, mFlowLinkModel );
+  executor.run();
 }
 
 void GraphController::removeNode( int index )
@@ -18,10 +25,10 @@ void GraphController::removeNode( int index )
     return;
 
   QList<int> linksToRemove;
-  for ( int i = 0; i < mLinkModel->rowCount(); ++i )
+  for ( int i = 0; i < mFlowLinkModel->rowCount(); ++i )
   {
-    const int link = mLinkModel->data( mLinkModel->index( i ), LinkModel::FromNodeRole ).toInt();
-    const int toNode = mLinkModel->data( mLinkModel->index( i ), LinkModel::ToNodeRole ).toInt();
+    const int link = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromNodeRole ).toInt();
+    const int toNode = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToNodeRole ).toInt();
     if ( link == index || toNode == index )
     {
       linksToRemove.append( i );
@@ -29,7 +36,7 @@ void GraphController::removeNode( int index )
   }
   std::sort( linksToRemove.begin(), linksToRemove.end(), std::greater<int>() );
   for ( int idx : linksToRemove )
-    mLinkModel->removeLink( idx );
+    mFlowLinkModel->removeLink( idx );
 
   mFlowNodeModel->removeNode( index );
 }
@@ -39,15 +46,15 @@ void GraphController::removeNodes( const QList<int> &nodesToRemove )
   if ( nodesToRemove.isEmpty() )
     return;
 
-  for ( int i = mLinkModel->rowCount() - 1; i >= 0; --i )
+  for ( int i = mFlowLinkModel->rowCount() - 1; i >= 0; --i )
   {
-    int from = mLinkModel->data( mLinkModel->index( i ), LinkModel::FromNodeRole ).toInt();
-    int to = mLinkModel->data( mLinkModel->index( i ), LinkModel::ToNodeRole ).toInt();
+    int from = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromNodeRole ).toInt();
+    int to = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToNodeRole ).toInt();
     for ( int nodeIndex : nodesToRemove )
     {
       if ( from == nodeIndex || to == nodeIndex )
       {
-        mLinkModel->removeLink( i );
+        mFlowLinkModel->removeLink( i );
         break; // لینک حذف شد، نیازی به بررسی بقیه nodesToRemove نیست
       }
     }
@@ -67,7 +74,7 @@ void GraphController::removeNodes( const QList<int> &nodesToRemove )
 void GraphController::clearGraph()
 {
   mFlowNodeModel->clear();
-  mLinkModel->clear();
+  mFlowLinkModel->clear();
 }
 
 
@@ -88,7 +95,6 @@ bool GraphController::saveFlow( const QString &path )
     n["y"] = node.y;
     n["color"] = node.color;
 
-
     QJsonArray attrs;
     for ( const auto &attr : node.attributes )
     {
@@ -106,14 +112,14 @@ bool GraphController::saveFlow( const QString &path )
 
   // Links
   QJsonArray linksArray;
-  for ( int i = 0; i < mLinkModel->rowCount(); ++i )
+  for ( int i = 0; i < mFlowLinkModel->rowCount(); ++i )
   {
-    QModelIndex idx = mLinkModel->index( i, 0 );
+    QModelIndex idx = mFlowLinkModel->index( i, 0 );
     QJsonObject l;
-    l["fromNode"] = mLinkModel->data( idx, LinkModel::FromNodeRole ).toInt();
-    l["fromAttr"] = mLinkModel->data( idx, LinkModel::FromAttributeRole ).toInt();
-    l["toNode"] = mLinkModel->data( idx, LinkModel::ToNodeRole ).toInt();
-    l["toAttr"] = mLinkModel->data( idx, LinkModel::ToAttributeRole ).toInt();
+    l["fromNode"] = mFlowLinkModel->data( idx, FlowLinkModel::FromNodeRole ).toInt();
+    l["fromAttr"] = mFlowLinkModel->data( idx, FlowLinkModel::FromAttributeRole ).toInt();
+    l["toNode"] = mFlowLinkModel->data( idx, FlowLinkModel::ToNodeRole ).toInt();
+    l["toAttr"] = mFlowLinkModel->data( idx, FlowLinkModel::ToAttributeRole ).toInt();
     linksArray.append( l );
   }
   root["links"] = linksArray;
@@ -157,7 +163,7 @@ bool GraphController::loadFlow( const QString &path )
     QJsonObject n = v.toObject();
     QString name = n["name"].toString();
     QString color = n["color"].toString();
-    int type = n["type"].toInt();
+    QString type = n["type"].toString();
     int x = n["x"].toInt();
     int y = n["y"].toInt();
 
@@ -181,7 +187,7 @@ bool GraphController::loadFlow( const QString &path )
   for ( auto v : linksArray )
   {
     QJsonObject l = v.toObject();
-    mLinkModel->addLink(
+    mFlowLinkModel->addLink(
       l["fromNode"].toInt(),
       l["fromAttr"].toInt(),
       l["toNode"].toInt(),
