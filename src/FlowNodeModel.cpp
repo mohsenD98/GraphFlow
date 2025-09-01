@@ -16,7 +16,7 @@ QVariant FlowNodeModel::data( const QModelIndex &index, int role ) const
   if ( !index.isValid() || index.row() < 0 || index.row() >= mNodes.size() )
     return QVariant();
 
-  const auto &node = mNodes.at( index.row() );
+  const FlowNodeData &node = mNodes.at( index.row() );
 
   switch ( role )
   {
@@ -105,7 +105,7 @@ void FlowNodeModel::clear()
 
 FlowNodeData FlowNodeModel::getNode( const QString &id ) const
 {
-  for ( const auto &node : mNodes )
+  for ( const FlowNodeData &node : mNodes )
   {
     if ( node.id == id )
       return node;
@@ -124,7 +124,7 @@ void FlowNodeModel::setNodePosition( const QString &id, int x, int y )
 {
   for ( int i = 0; i < mNodes.size(); ++i )
   {
-    auto &node = mNodes[i];
+    FlowNodeData &node = mNodes[i];
     if ( node.id == id )
     {
       if ( node.x == x && node.y == y )
@@ -179,7 +179,7 @@ void FlowNodeModel::addAttribute( const QString &id, const QString &name, bool h
 QVariantList FlowNodeModel::getAttributes( const QString &id ) const
 {
   QVariantList list;
-  for ( const auto &node : mNodes )
+  for ( const FlowNodeData &node : mNodes )
   {
     if ( node.id == id )
     {
@@ -203,7 +203,7 @@ void FlowNodeModel::setAttributeValue( const QString &id, const QString &attrNam
   {
     if ( mNodes[i].id == id )
     {
-      for ( auto &attr : mNodes[i].attributes )
+      for ( Attribute &attr : mNodes[i].attributes )
       {
         if ( attr.name == attrName )
         {
@@ -218,11 +218,11 @@ void FlowNodeModel::setAttributeValue( const QString &id, const QString &attrNam
 
 QVariant FlowNodeModel::getAttributeValue( const QString &id, const QString &attrName ) const
 {
-  for ( const auto &node : mNodes )
+  for ( const FlowNodeData &node : mNodes )
   {
     if ( node.id == id )
     {
-      for ( const auto &attr : node.attributes )
+      for ( const Attribute &attr : node.attributes )
       {
         if ( attr.name == attrName )
         {

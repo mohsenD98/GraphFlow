@@ -71,8 +71,9 @@ bool NodeLibraryModel::loadFromJson( const QString &path )
   QJsonArray arr = doc.array();
   beginResetModel();
   m_nodes.clear();
-  for ( const QJsonValue &v : arr )
+  for ( int i = 0; i < arr.size(); ++i )
   {
+    QJsonValue v = arr.at( i );
     if ( !v.isObject() )
       continue;
     QJsonObject obj = v.toObject();
@@ -83,13 +84,13 @@ bool NodeLibraryModel::loadFromJson( const QString &path )
     item.icon = obj["icon"].toString();
     item.color = obj["color"].toString();
 
-    // attributes
     item.attributes.clear();
     if ( obj.contains( "attributes" ) && obj["attributes"].isArray() )
     {
       QJsonArray attrArr = obj["attributes"].toArray();
-      for ( const QJsonValue &attrVal : attrArr )
+      for ( int j = 0; j < attrArr.size(); ++j )
       {
+        QJsonValue attrVal = attrArr.at( j );
         if ( attrVal.isObject() )
         {
           item.attributes.append( attrVal.toObject().toVariantMap() );
@@ -97,7 +98,6 @@ bool NodeLibraryModel::loadFromJson( const QString &path )
       }
     }
 
-    // values
     if ( obj.contains( "values" ) && obj["values"].isObject() )
     {
       item.values = obj["values"].toObject().toVariantMap();
@@ -109,6 +109,7 @@ bool NodeLibraryModel::loadFromJson( const QString &path )
 
     m_nodes.append( item );
   }
+
   endResetModel();
   return true;
 }

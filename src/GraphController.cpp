@@ -14,7 +14,6 @@ GraphController::GraphController( QObject *parent )
 
 void GraphController::runFlow()
 {
-  // run
 }
 
 void GraphController::removeNodes( const QList<QString> &nodeIdsToRemove )
@@ -32,11 +31,11 @@ void GraphController::removeNodes( const QList<QString> &nodeIdsToRemove )
       if ( fromId == nodeId || toId == nodeId )
       {
         mFlowLinkModel->removeLink( i );
-        break; // لینک حذف شد، نیازی به بررسی بقیه نیست
+        break;
       }
     }
   }
-  // بعد خود نودها رو حذف کنیم
+
   for ( const QString &nodeId : nodeIdsToRemove )
   {
     mFlowNodeModel->removeNode( nodeId );
@@ -87,9 +86,10 @@ void GraphController::deselectNode( const QString &id )
 
 void GraphController::clearSelection()
 {
-  for ( const QString &id : mSelectedNodes )
+  QList<QString> selectedCopy = mSelectedNodes;
+  for ( int i = 0; i < selectedCopy.size(); ++i )
   {
-    deselectNode( id );
+    deselectNode( selectedCopy.at( i ) );
   }
   mSelectedNodes.clear();
   emit selectedNodesChanged();
@@ -102,7 +102,6 @@ bool GraphController::saveFlow( const QString &path )
 {
   QJsonObject root;
 
-  // Nodes
   QJsonArray nodesArray;
   for ( int i = 0; i < mFlowNodeModel->rowCount(); ++i )
   {
@@ -117,8 +116,9 @@ bool GraphController::saveFlow( const QString &path )
     n["id"] = node.id;
 
     QJsonArray attrs;
-    for ( const auto &attr : node.attributes )
+    for ( int i = 0; i < node.attributes.size(); ++i )
     {
+      const Attribute &attr = node.attributes.at( i );
       QJsonObject a;
       a["name"] = attr.name;
       a["hasInput"] = attr.hasInput;
@@ -126,12 +126,11 @@ bool GraphController::saveFlow( const QString &path )
       attrs.append( a );
     }
     n["attributes"] = attrs;
-
     nodesArray.append( n );
   }
   root["nodes"] = nodesArray;
 
-  // Links
+
   QJsonArray linksArray;
   for ( int i = 0; i < mFlowLinkModel->rowCount(); ++i )
   {
@@ -155,7 +154,6 @@ bool GraphController::saveFlow( const QString &path )
   file.write( QJsonDocument( root ).toJson( QJsonDocument::Indented ) );
   return true;
 }
-
 bool GraphController::loadFlow( const QString &path )
 {
   QFile file( path );
@@ -177,11 +175,15 @@ bool GraphController::loadFlow( const QString &path )
 
   QJsonObject root = doc.object();
 
-  // Load nodes
+
   QJsonArray nodesArray = root["nodes"].toArray();
-  for ( auto v : nodesArray )
+  for ( int i = 0; i < nodesArray.size(); ++i )
   {
-    QJsonObject n = v.toObject();
+    QJsonValue val = nodesArray.at( i );
+    if ( !val.isObject() )
+      continue;
+
+    QJsonObject n = val.toObject();
     QString name = n["name"].toString();
     QString color = n["color"].toString();
     QString type = n["type"].toString();
@@ -192,9 +194,13 @@ bool GraphController::loadFlow( const QString &path )
     mFlowNodeModel->addNode( name, type, x, y, color, id );
 
     QJsonArray attrs = n["attributes"].toArray();
-    for ( auto aVal : attrs )
+    for ( int j = 0; j < attrs.size(); ++j )
     {
-      QJsonObject a = aVal.toObject();
+      QJsonValue attrVal = attrs.at( j );
+      if ( !attrVal.isObject() )
+        continue;
+
+      QJsonObject a = attrVal.toObject();
       mFlowNodeModel->addAttribute(
         id,
         a["name"].toString(),
@@ -203,11 +209,15 @@ bool GraphController::loadFlow( const QString &path )
     }
   }
 
-  // Load links
+
   QJsonArray linksArray = root["links"].toArray();
-  for ( auto v : linksArray )
+  for ( int i = 0; i < linksArray.size(); ++i )
   {
-    QJsonObject l = v.toObject();
+    QJsonValue val = linksArray.at( i );
+    if ( !val.isObject() )
+      continue;
+
+    QJsonObject l = val.toObject();
     mFlowLinkModel->addLink(
       l["fromNode"].toString(),
       l["fromAttr"].toInt(),
