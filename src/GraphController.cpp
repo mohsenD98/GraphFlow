@@ -19,43 +19,40 @@ void GraphController::runFlow()
   executor.run();
 }
 
-void GraphController::removeNodes( const QList<int> &nodesToRemove )
+void GraphController::removeNodes( const QList<QString> &nodeIdsToRemove )
 {
-  if ( nodesToRemove.isEmpty() )
+  if ( nodeIdsToRemove.isEmpty() )
     return;
 
   for ( int i = mFlowLinkModel->rowCount() - 1; i >= 0; --i )
   {
-    int from = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromNodeRole ).toInt();
-    int to = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToNodeRole ).toInt();
-    for ( int nodeIndex : nodesToRemove )
+    QString fromId = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromNodeRole ).toString();
+    QString toId = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToNodeRole ).toString();
+
+    for ( const QString &nodeId : nodeIdsToRemove )
     {
-      if ( from == nodeIndex || to == nodeIndex )
+      if ( fromId == nodeId || toId == nodeId )
       {
         mFlowLinkModel->removeLink( i );
-        break; // لینک حذف شد، نیازی به بررسی بقیه nodesToRemove نیست
+        break; // لینک حذف شد، نیازی به بررسی بقیه نیست
       }
     }
   }
-
-  QList<int> sortedNodes = nodesToRemove;
-  std::sort( sortedNodes.begin(), sortedNodes.end(), std::greater<int>() );
-  for ( int idx : sortedNodes )
+  // بعد خود نودها رو حذف کنیم
+  for ( const QString &nodeId : nodeIdsToRemove )
   {
-    if ( idx >= 0 && idx < mFlowNodeModel->rowCount() )
-    {
-      mFlowNodeModel->removeNode( idx );
-    }
+    mFlowNodeModel->removeNode( nodeId );
   }
 }
 
-void GraphController::removeLink( int fromNode, int fromAttr, int toNode, int toAttr )
+
+void GraphController::removeLink( const QString &fromNode, int fromAttr, const QString &toNode, int toAttr )
 {
   for ( int i = 0; i < mFlowLinkModel->rowCount(); ++i )
   {
-    int fNode = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromNodeRole ).toInt();
+    QString fNode = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromNodeRole ).toString();
     int fAttr = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromAttributeRole ).toInt();
-    int tNode = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToNodeRole ).toInt();
+    QString tNode = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToNodeRole ).toString();
     int tAttr = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToAttributeRole ).toInt();
 
     if ( fNode == fromNode && fAttr == fromAttr && tNode == toNode && tAttr == toAttr )
@@ -89,6 +86,7 @@ bool GraphController::saveFlow( const QString &path )
     n["x"] = node.x;
     n["y"] = node.y;
     n["color"] = node.color;
+    n["id"] = node.id;
 
     QJsonArray attrs;
     for ( const auto &attr : node.attributes )
@@ -111,9 +109,9 @@ bool GraphController::saveFlow( const QString &path )
   {
     QModelIndex idx = mFlowLinkModel->index( i, 0 );
     QJsonObject l;
-    l["fromNode"] = mFlowLinkModel->data( idx, FlowLinkModel::FromNodeRole ).toInt();
+    l["fromNode"] = mFlowLinkModel->data( idx, FlowLinkModel::FromNodeRole ).toString();
     l["fromAttr"] = mFlowLinkModel->data( idx, FlowLinkModel::FromAttributeRole ).toInt();
-    l["toNode"] = mFlowLinkModel->data( idx, FlowLinkModel::ToNodeRole ).toInt();
+    l["toNode"] = mFlowLinkModel->data( idx, FlowLinkModel::ToNodeRole ).toString();
     l["toAttr"] = mFlowLinkModel->data( idx, FlowLinkModel::ToAttributeRole ).toInt();
     linksArray.append( l );
   }
@@ -159,18 +157,18 @@ bool GraphController::loadFlow( const QString &path )
     QString name = n["name"].toString();
     QString color = n["color"].toString();
     QString type = n["type"].toString();
+    QString id = n["id"].toString();
     int x = n["x"].toInt();
     int y = n["y"].toInt();
 
-    mFlowNodeModel->addNode( name, type, x, y, color );
-    int nodeIndex = mFlowNodeModel->rowCount() - 1;
+    mFlowNodeModel->addNode( name, type, x, y, color, id );
 
     QJsonArray attrs = n["attributes"].toArray();
     for ( auto aVal : attrs )
     {
       QJsonObject a = aVal.toObject();
       mFlowNodeModel->addAttribute(
-        nodeIndex,
+        id,
         a["name"].toString(),
         a["hasInput"].toBool(),
         a["hasOutput"].toBool() );
@@ -183,9 +181,9 @@ bool GraphController::loadFlow( const QString &path )
   {
     QJsonObject l = v.toObject();
     mFlowLinkModel->addLink(
-      l["fromNode"].toInt(),
+      l["fromNode"].toString(),
       l["fromAttr"].toInt(),
-      l["toNode"].toInt(),
+      l["toNode"].toString(),
       l["toAttr"].toInt() );
   }
 

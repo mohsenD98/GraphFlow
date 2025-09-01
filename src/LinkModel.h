@@ -3,9 +3,9 @@
 
 struct LinkData
 {
-    int fromNodeIndex;
+    QString fromNodeId;
     int fromAttributeIndex;
-    int toNodeIndex;
+    QString toNodeId;
     int toAttributeIndex;
 };
 
@@ -28,7 +28,7 @@ class FlowLinkModel : public QAbstractListModel
     QVariant data( const QModelIndex &index, int role ) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void addLink( int fromNode, int fromAttr, int toNode, int toAttr );
+    Q_INVOKABLE void addLink( const QString &fromNodeId, int fromAttr, const QString &toNodeId, int toAttr );
     Q_INVOKABLE void removeLink( int index );
     Q_INVOKABLE void clear();
 

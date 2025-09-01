@@ -12,6 +12,7 @@ struct Attribute
 
 struct FlowNodeData
 {
+    QString id;
     QString name;
     QString type;
     int x;
@@ -31,7 +32,8 @@ class FlowNodeModel : public QAbstractListModel
       TypeRole,
       XRole,
       YRole,
-      ColorRole
+      ColorRole,
+      IdRole
     };
 
     explicit FlowNodeModel( QObject *parent = nullptr );
@@ -40,19 +42,20 @@ class FlowNodeModel : public QAbstractListModel
     QVariant data( const QModelIndex &index, int role ) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void addNode( const QString &name, QString type, int x, int y, const QString &color );
-    Q_INVOKABLE void removeNode( int index );
+    Q_INVOKABLE QString addNode( const QString &name, QString type, int x, int y, const QString &color, const QString &uuid = "" );
+    Q_INVOKABLE void removeNode( const QString &id );
     Q_INVOKABLE void clear();
-    Q_INVOKABLE FlowNodeData getNode( int index ) const;
-    Q_INVOKABLE void setNodePosition( int index, int x, int y );
+    Q_INVOKABLE FlowNodeData getNode( const QString &id ) const;
+    Q_INVOKABLE FlowNodeData getNode( int id ) const;
+    Q_INVOKABLE void setNodePosition( const QString &id, int x, int y );
 
-    Q_INVOKABLE void addAttribute( int nodeIndex, const QString &name, bool hasInput, bool hasOutput );
-    Q_INVOKABLE QVariantList getAttributes( int nodeIndex ) const;
-    Q_INVOKABLE void setAttributeValue( int nodeIndex, const QString &attrName, const QVariant &val );
-    Q_INVOKABLE QVariant getAttributeValue( int nodeIndex, const QString &attrName ) const;
+    Q_INVOKABLE void addAttribute( const QString &id, const QString &name, bool hasInput, bool hasOutput );
+    Q_INVOKABLE QVariantList getAttributes( const QString &id ) const;
+    Q_INVOKABLE void setAttributeValue( const QString &id, const QString &attrName, const QVariant &val );
+    Q_INVOKABLE QVariant getAttributeValue( const QString &id, const QString &attrName ) const;
 
   signals:
-    void attributesChanged( int nodeIndex );
+    void attributesChanged( const QString &id );
 
   private:
     QList<FlowNodeData> mNodes;

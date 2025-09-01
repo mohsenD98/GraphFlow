@@ -19,11 +19,11 @@ QVariant FlowLinkModel::data( const QModelIndex &index, int role ) const
   switch ( role )
   {
     case FromNodeRole:
-      return link.fromNodeIndex;
+      return link.fromNodeId;
     case FromAttributeRole:
       return link.fromAttributeIndex;
     case ToNodeRole:
-      return link.toNodeIndex;
+      return link.toNodeId;
     case ToAttributeRole:
       return link.toAttributeIndex;
     default:
@@ -41,10 +41,10 @@ QHash<int, QByteArray> FlowLinkModel::roleNames() const
   return roles;
 }
 
-void FlowLinkModel::addLink( int fromNode, int fromAttr, int toNode, int toAttr )
+void FlowLinkModel::addLink( const QString &fromNodeId, int fromAttr, const QString &toNodeId, int toAttr )
 {
   beginInsertRows( QModelIndex(), mLinks.size(), mLinks.size() );
-  mLinks.append( { fromNode, fromAttr, toNode, toAttr } );
+  mLinks.append( { fromNodeId, fromAttr, toNodeId, toAttr } );
   endInsertRows();
 }
 

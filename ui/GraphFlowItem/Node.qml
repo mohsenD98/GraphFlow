@@ -3,7 +3,8 @@ import QtQuick 2.12
 Rectangle {
   id: root
   property alias name: text.text
-  property int nodeIndex: -1 // اندیس Node در NodeModel
+  property int nodeIndex: -1
+  property string uuid: ""
   property var user
   property bool selected
   property alias attRepeater: attributesRepeater
@@ -88,9 +89,9 @@ Rectangle {
 
   Connections {
     target: nodeModel
-    function onAttributesChanged(index) {
-      if (index == nodeIndex) {
-        attributesRepeater.model = nodeModel.getAttributes(nodeIndex);
+    function onAttributesChanged(id) {
+      if (id === uuid) {
+        attributesRepeater.model = nodeModel.getAttributes(id);
         updateHeight();
       }
     }

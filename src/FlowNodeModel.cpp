@@ -1,5 +1,7 @@
 #include "FlowNodeModel.h"
 
+#include <QUuid>
+
 FlowNodeModel::FlowNodeModel( QObject *parent )
   : QAbstractListModel( parent ) {}
 
@@ -28,6 +30,8 @@ QVariant FlowNodeModel::data( const QModelIndex &index, int role ) const
       return node.y;
     case ColorRole:
       return node.color;
+    case IdRole:
+      return node.id;
     default:
       return QVariant();
   }
@@ -41,14 +45,22 @@ QHash<int, QByteArray> FlowNodeModel::roleNames() const
   roles[XRole] = "x";
   roles[YRole] = "y";
   roles[ColorRole] = "color";
+  roles[IdRole] = "id";
   return roles;
 }
 
-
-void FlowNodeModel::addNode( const QString &name, QString type, int x, int y, const QString &color )
+QString FlowNodeModel::addNode( const QString &name, QString type, int x, int y, const QString &color, const QString &uuid )
 {
   beginInsertRows( QModelIndex(), mNodes.size(), mNodes.size() );
   FlowNodeData node;
+  if ( uuid.isEmpty() )
+  {
+    node.id = QUuid::createUuid().toString( QUuid::WithoutBraces );
+  }
+  else
+  {
+    node.id = uuid;
+  }
   node.name = name;
   node.type = type;
   node.x = x;
@@ -56,12 +68,26 @@ void FlowNodeModel::addNode( const QString &name, QString type, int x, int y, co
   node.color = color;
   mNodes.append( node );
   endInsertRows();
+
+  return node.id;
 }
 
-void FlowNodeModel::removeNode( int index )
+void FlowNodeModel::removeNode( const QString &id )
 {
-  if ( index < 0 || index >= mNodes.size() )
+  int index = -1;
+
+  for ( int i = 0; i < mNodes.size(); ++i )
+  {
+    if ( mNodes[i].id == id )
+    {
+      index = i;
+      break;
+    }
+  }
+
+  if ( index < 0 )
     return;
+
   beginRemoveRows( QModelIndex(), index, index );
   mNodes.removeAt( index );
   endRemoveRows();
@@ -74,6 +100,16 @@ void FlowNodeModel::clear()
   endResetModel();
 }
 
+FlowNodeData FlowNodeModel::getNode( const QString &id ) const
+{
+  for ( const auto &node : mNodes )
+  {
+    if ( node.id == id )
+      return node;
+  }
+  return FlowNodeData();
+}
+
 FlowNodeData FlowNodeModel::getNode( int index ) const
 {
   if ( index < 0 || index >= mNodes.size() )
@@ -81,76 +117,96 @@ FlowNodeData FlowNodeModel::getNode( int index ) const
   return mNodes[index];
 }
 
-void FlowNodeModel::setNodePosition( int index, int x, int y )
+void FlowNodeModel::setNodePosition( const QString &id, int x, int y )
 {
-  if ( index < 0 || index >= mNodes.size() )
-    return;
-
-  auto &node = mNodes[index];
-  if ( node.x == x && node.y == y )
-    return;
-
-  node.x = x;
-  node.y = y;
-
-  QModelIndex modelIndex = this->index( index );
-  emit dataChanged( modelIndex, modelIndex, { XRole, YRole } );
-}
-
-void FlowNodeModel::addAttribute( int nodeIndex, const QString &name, bool hasInput, bool hasOutput )
-{
-  if ( nodeIndex < 0 || nodeIndex >= mNodes.size() )
-    return;
-  Attribute attr;
-  attr.name = name;
-  attr.hasInput = hasInput;
-  attr.hasOutput = hasOutput;
-  mNodes[nodeIndex].attributes.append( attr );
-  emit attributesChanged( nodeIndex );
-}
-
-QVariantList FlowNodeModel::getAttributes( int nodeIndex ) const
-{
-  QVariantList list;
-  if ( nodeIndex < 0 || nodeIndex >= mNodes.size() )
-    return list;
-  for ( const Attribute &attr : mNodes[nodeIndex].attributes )
+  for ( int i = 0; i < mNodes.size(); ++i )
   {
-    QVariantMap map;
-    map["name"] = attr.name;
-    map["hasInput"] = attr.hasInput;
-    map["hasOutput"] = attr.hasOutput;
-    list.append( map );
-  }
-  return list;
-}
-
-void FlowNodeModel::setAttributeValue( int nodeIndex, const QString &attrName, const QVariant &val )
-{
-  if ( nodeIndex < 0 || nodeIndex >= mNodes.size() )
-    return;
-
-  for ( auto &attr : mNodes[nodeIndex].attributes )
-  {
-    if ( attr.name == attrName )
+    auto &node = mNodes[i];
+    if ( node.id == id )
     {
-      attr.value = val;
-      emit attributesChanged( nodeIndex );
+      if ( node.x == x && node.y == y )
+        return;
+
+      node.x = x;
+      node.y = y;
+
+      QModelIndex modelIndex = this->index( i );
+      emit dataChanged( modelIndex, modelIndex, { XRole, YRole } );
       return;
     }
   }
 }
 
-QVariant FlowNodeModel::getAttributeValue( int nodeIndex, const QString &attrName ) const
+void FlowNodeModel::addAttribute( const QString &id, const QString &name, bool hasInput, bool hasOutput )
 {
-  if ( nodeIndex < 0 || nodeIndex >= mNodes.size() )
-    return QVariant();
-
-  for ( const auto &attr : mNodes[nodeIndex].attributes )
+  for ( int i = 0; i < mNodes.size(); ++i )
   {
-    if ( attr.name == attrName )
+    if ( mNodes[i].id == id )
     {
-      return attr.value;
+      Attribute attr;
+      attr.name = name;
+      attr.hasInput = hasInput;
+      attr.hasOutput = hasOutput;
+      mNodes[i].attributes.append( attr );
+      emit attributesChanged( id );
+      return;
+    }
+  }
+}
+
+QVariantList FlowNodeModel::getAttributes( const QString &id ) const
+{
+  QVariantList list;
+  for ( const auto &node : mNodes )
+  {
+    if ( node.id == id )
+    {
+      for ( const Attribute &attr : node.attributes )
+      {
+        QVariantMap map;
+        map["name"] = attr.name;
+        map["hasInput"] = attr.hasInput;
+        map["hasOutput"] = attr.hasOutput;
+        list.append( map );
+      }
+      break;
+    }
+  }
+  return list;
+}
+
+void FlowNodeModel::setAttributeValue( const QString &id, const QString &attrName, const QVariant &val )
+{
+  for ( int i = 0; i < mNodes.size(); ++i )
+  {
+    if ( mNodes[i].id == id )
+    {
+      for ( auto &attr : mNodes[i].attributes )
+      {
+        if ( attr.name == attrName )
+        {
+          attr.value = val;
+          emit attributesChanged( id );
+          return;
+        }
+      }
+    }
+  }
+}
+
+QVariant FlowNodeModel::getAttributeValue( const QString &id, const QString &attrName ) const
+{
+  for ( const auto &node : mNodes )
+  {
+    if ( node.id == id )
+    {
+      for ( const auto &attr : node.attributes )
+      {
+        if ( attr.name == attrName )
+        {
+          return attr.value;
+        }
+      }
     }
   }
   return QVariant();

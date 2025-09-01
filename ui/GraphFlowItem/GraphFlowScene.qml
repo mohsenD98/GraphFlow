@@ -10,11 +10,12 @@ Item {
     if (event.key === Qt.Key_Delete) {
       let nodes = [];
       for (let s in graph.selectedNodes) {
-        nodes.push(graph.selectedNodes[s].nodeIndex);
+        nodes.push(graph.selectedNodes[s].uuid);
       }
       GraphController.removeNodes(nodes);
     }
   }
+
   Background {
     anchors.fill: parent
   }
@@ -58,28 +59,15 @@ Item {
     }
   }
 
-  // MultiEffect {
-  //   id: quickMultiEffect
-  //   anchors.fill: scaleFactor == 1 ? graph : undefined
-  //   enabled: scaleFactor == 1 && source !== undefined
-  //   source: scaleFactor == 1 ? graph : undefined
-  //   shadowEnabled: scaleFactor == 1
-  //   shadowOpacity: .7
-  //   shadowBlur: 0.7
-  //   shadowHorizontalOffset: 5
-  //   shadowVerticalOffset: 2
-  //   shadowColor: "black"
-  //   shadowScale: 1
-  // }
   function addNode(nodeData) {
     const currentCount = graph.nodeModel.rowCount();
     let x = nodeData.x !== undefined ? nodeData.x : (10 + (currentCount * 300)) % root.width;
     let y = nodeData.y !== undefined ? nodeData.y : 10;
-    graph.nodeModel.addNode(nodeData.name, nodeData.type, x, y, nodeData.color);
+    let id = graph.nodeModel.addNode(nodeData.name, nodeData.type, x, y, nodeData.color);
     if (nodeData.attributes) {
       for (var i = 0; i < nodeData.attributes.length; i++) {
         const attr = nodeData.attributes[i];
-        graph.nodeModel.addAttribute(currentCount, attr.name, attr.hasInput, attr.hasOutput);
+        graph.nodeModel.addAttribute(id, attr.name, attr.hasInput, attr.hasOutput);
       }
     }
   }

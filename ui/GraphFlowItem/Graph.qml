@@ -18,15 +18,16 @@ Item {
       type: model.type
       nodeIndex: index
       selected: false
+      uuid: model.id
       nodeHeaderColor: model.color
 
       onXChanged: {
         if (loaded)
-          GraphController.nodeModel.setNodePosition(nodeIndex, x, y);
+          GraphController.nodeModel.setNodePosition(uuid, x, y);
       }
       onYChanged: {
         if (loaded)
-          GraphController.nodeModel.setNodePosition(nodeIndex, x, y);
+          GraphController.nodeModel.setNodePosition(uuid, x, y);
       }
 
       function intersects(rect) {
@@ -42,19 +43,25 @@ Item {
         loaded = true;
       }
     }
+
+    function getNodeById(id) {
+      for (let i = 0; i < count; i++) {
+        if (itemAt(i).uuid === id) {
+          return itemAt(i);
+        }
+      }
+      return null; // اگه چیزی پیدا نشد
+    }
   }
 
   Repeater {
     id: linksRepeater
     model: linkModel
     delegate: Link {
-      from: nodesRepeater.itemAt(model.fromNode).attRepeater.itemAt(model.fromAttr)
-      to: nodesRepeater.itemAt(model.toNode).attRepeater.itemAt(model.toAttr)
+      from: nodesRepeater.getNodeById(model.fromNode).attRepeater.itemAt(model.fromAttr)
+      to: nodesRepeater.getNodeById(model.toNode).attRepeater.itemAt(model.toAttr)
 
       Component.onCompleted: {
-        console.log(nodesRepeater.count, model.fromNode);
-        console.log(nodesRepeater.itemAt(model.fromNode));
-        console.log("---");
         to.boundInputs.push([model.fromNode, model.fromAttr]);
       }
 
@@ -158,13 +165,13 @@ Item {
 
     function begin(socket, pos) {
       clearSelection();
-      if (socket.isInput && socket.attribute.boundInputs.length <= 2) {
+      if (socket.isInput && socket.attribute.boundInputs.length == 1) {
         const to = socket.attribute.node;
         const from = socket.attribute.boundInputs[0];
-        GraphController.removeLink(from[0], from[1], to.nodeIndex, socket.attribute.attrIndex);
+        GraphController.removeLink(from[0], from[1], to.uuid, socket.attribute.attrIndex);
         socket.attribute.boundInputs.pop();
         let tmp = socket;
-        socket = nodesRepeater.itemAt(from[0]).attRepeater.itemAt(from[1]).output;
+        socket = nodesRepeater.getNodeById(from[0]).attRepeater.itemAt(from[1]).output;
         pos = mapToItem(socket, mapFromItem(tmp, pos));
       }
       visible = true;
@@ -182,10 +189,8 @@ Item {
         return;
       let p1 = parent.mapFromItem(draggable, -draggable.x, -draggable.y + socket.height / 2);
       let p2 = parent.mapFromItem(draggable, 0, 0);
-      console.log(draggable.target);
       // snap to target
       if (draggable.target) {
-        console.log("snapping");
         p2 = parent.mapFromItem(draggable.target, 0, socket.height / 2);
       }
 
@@ -256,13 +261,10 @@ Item {
     onDoubleClicked: {
       const node = getNodeAtPosition(Qt.point(mouseX, mouseY));
       if (node)
-        attributeDialog.openForNode(node);
+      // attributeDialog.openForNode(node);
+      {
+      }
     }
-  }
-
-  AttributeDialog {
-    id: attributeDialog
-    width: 300
   }
 
   // -------------------- Functions --------------------
@@ -319,8 +321,6 @@ Item {
   }
 
   function addLink(from, to) {
-    const fromIndex = from.node.nodeIndex;
-    const toIndex = to.node.nodeIndex;
-    linkModel.addLink(fromIndex, from.attrIndex, toIndex, to.attrIndex);
+    linkModel.addLink(from.node.uuid, from.attrIndex, to.node.uuid, to.attrIndex);
   }
 }
