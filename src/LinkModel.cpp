@@ -43,11 +43,18 @@ QHash<int, QByteArray> FlowLinkModel::roleNames() const
 
 void FlowLinkModel::addLink( const QString &fromNodeId, int fromAttr, const QString &toNodeId, int toAttr )
 {
+  for ( int i = 0; i < mLinks.size(); ++i )
+  {
+    const LinkData &link = mLinks.at( i );
+    if ( link.fromNodeId == fromNodeId && link.fromAttributeIndex == fromAttr && link.toNodeId == toNodeId && link.toAttributeIndex == toAttr )
+    {
+      return;
+    }
+  }
   beginInsertRows( QModelIndex(), mLinks.size(), mLinks.size() );
   mLinks.append( { fromNodeId, fromAttr, toNodeId, toAttr } );
   endInsertRows();
 }
-
 void FlowLinkModel::removeLink( int index )
 {
   if ( index < 0 || index >= mLinks.size() )
