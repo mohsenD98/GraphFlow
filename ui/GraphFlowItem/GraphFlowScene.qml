@@ -64,7 +64,7 @@ Item {
     if (nodeData.attributes) {
       for (var i = 0; i < nodeData.attributes.length; i++) {
         const attr = nodeData.attributes[i];
-        graph.nodeModel.addAttribute(id, attr.name, attr.hasInput, attr.hasOutput);
+        graph.nodeModel.addAttribute(id, attr.name, attr.hasInput, attr.hasOutput, attr.maxNumberOfInputs);
       }
     }
   }

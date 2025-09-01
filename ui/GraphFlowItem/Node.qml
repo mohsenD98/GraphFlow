@@ -68,6 +68,7 @@ Rectangle {
         text: modelData.name
         input.visible: modelData.hasInput
         output.visible: modelData.hasOutput
+        maxNumberOfInputs: modelData.maxNumberOfInputs
 
         property int attrIndex: index
       }

@@ -4,7 +4,7 @@
     "name": "Input",
     "description": "Provides initial data input to the graph.",
     "attributes": [
-      {"name": "output", "hasInput": false, "hasOutput": true}
+      {"name": "output", "hasInput": false, "hasOutput": true, "maxNumberOfInputs": 1}
     ],
     "values": {"value": 0},
     "color": "#FFC107",
@@ -15,9 +15,9 @@
     "name": "Multiply",
     "description": "Multiplies two input values and outputs the result.",
     "attributes": [
-      {"name": "input1", "hasInput": true, "hasOutput": false},
-      {"name": "input2", "hasInput": true, "hasOutput": false},
-      {"name": "output", "hasInput": false, "hasOutput": true}
+      {"name": "input1", "hasInput": true, "hasOutput": false, "maxNumberOfInputs": 1},
+      {"name": "input2", "hasInput": true, "hasOutput": false, "maxNumberOfInputs": 1},
+      {"name": "output", "hasInput": false, "hasOutput": true, "maxNumberOfInputs": 1}
     ],
     "values": {"factor": 1},
     "color": "#4CAF50",
@@ -28,9 +28,9 @@
     "name": "Add",
     "description": "Adds two input values and outputs the sum.",
     "attributes": [
-      {"name": "input1", "hasInput": true, "hasOutput": false},
-      {"name": "input2", "hasInput": true, "hasOutput": false},
-      {"name": "output", "hasInput": false, "hasOutput": true}
+      {"name": "input1", "hasInput": true, "hasOutput": false, "maxNumberOfInputs": 1},
+      {"name": "input2", "hasInput": true, "hasOutput": false, "maxNumberOfInputs": 1},
+      {"name": "output", "hasInput": false, "hasOutput": true, "maxNumberOfInputs": 1}
     ],
     "values": {},
     "color": "#03A9F4",
@@ -41,8 +41,8 @@
     "name": "Threshold",
     "description": "Passes input value only if it exceeds a threshold.",
     "attributes": [
-      {"name": "input", "hasInput": true, "hasOutput": false},
-      {"name": "output", "hasInput": false, "hasOutput": true}
+      {"name": "input", "hasInput": true, "hasOutput": false, "maxNumberOfInputs": 1},
+      {"name": "output", "hasInput": false, "hasOutput": true, "maxNumberOfInputs": 1}
     ],
     "values": {"threshold": 5},
     "color": "#E91E63",
@@ -53,7 +53,7 @@
     "name": "Output",
     "description": "Receives final data from the graph and displays it.",
     "attributes": [
-      {"name": "input", "hasInput": true, "hasOutput": false}
+      {"name": "input", "hasInput": true, "hasOutput": false, "maxNumberOfInputs": 3}
     ],
     "values": {"lastValue": null},
     "color": "#9C27B0",

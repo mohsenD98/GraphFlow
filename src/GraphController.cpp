@@ -123,6 +123,7 @@ bool GraphController::saveFlow( const QString &path )
       a["name"] = attr.name;
       a["hasInput"] = attr.hasInput;
       a["hasOutput"] = attr.hasOutput;
+      a["maxNumberOfInputs"] = attr.maxNumberOfInputs;
       attrs.append( a );
     }
     n["attributes"] = attrs;
@@ -205,7 +206,8 @@ bool GraphController::loadFlow( const QString &path )
         id,
         a["name"].toString(),
         a["hasInput"].toBool(),
-        a["hasOutput"].toBool() );
+        a["hasOutput"].toBool(),
+        a["maxNumberOfInputs"].toInt() );
     }
   }
 

@@ -8,6 +8,7 @@ Item {
   property alias output: outputSocket
   property var boundInputs: []
   property int socketSize: 12
+  property int maxNumberOfInputs: 1
 
   Socket {
     id: inputSocket

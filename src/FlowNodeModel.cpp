@@ -159,7 +159,7 @@ void FlowNodeModel::setNodeSelected( const QString &id, bool selected )
   }
 }
 
-void FlowNodeModel::addAttribute( const QString &id, const QString &name, bool hasInput, bool hasOutput )
+void FlowNodeModel::addAttribute( const QString &id, const QString &name, bool hasInput, bool hasOutput, int maxNumberOfInputs )
 {
   for ( int i = 0; i < mNodes.size(); ++i )
   {
@@ -169,6 +169,7 @@ void FlowNodeModel::addAttribute( const QString &id, const QString &name, bool h
       attr.name = name;
       attr.hasInput = hasInput;
       attr.hasOutput = hasOutput;
+      attr.maxNumberOfInputs = maxNumberOfInputs;
       mNodes[i].attributes.append( attr );
       emit attributesChanged( id );
       return;
@@ -189,6 +190,7 @@ QVariantList FlowNodeModel::getAttributes( const QString &id ) const
         map["name"] = attr.name;
         map["hasInput"] = attr.hasInput;
         map["hasOutput"] = attr.hasOutput;
+        map["maxNumberOfInputs"] = attr.maxNumberOfInputs;
         list.append( map );
       }
       break;

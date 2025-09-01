@@ -50,6 +50,6 @@ Rectangle {
   }
 
   function canLink(fromAttribute, toAttribute) {
-    return (fromAttribute && toAttribute && fromAttribute.output.visible && toAttribute.input.visible && toAttribute.boundInputs.length === 0 && fromAttribute.node != toAttribute.node);
+    return (fromAttribute && toAttribute && fromAttribute.output.visible && toAttribute.input.visible && toAttribute.boundInputs.length < toAttribute.maxNumberOfInputs && fromAttribute.node !== toAttribute.node);
   }
 }

@@ -7,6 +7,7 @@ struct Attribute
     QString name;
     bool hasInput;
     bool hasOutput;
+    int maxNumberOfInputs = 1;
     QVariant value = 3;
 };
 
@@ -50,7 +51,7 @@ class FlowNodeModel : public QAbstractListModel
     Q_INVOKABLE FlowNodeData getNode( const QString &id ) const;
     Q_INVOKABLE FlowNodeData getNode( int id ) const;
     Q_INVOKABLE void setNodePosition( const QString &id, int x, int y );
-    Q_INVOKABLE void addAttribute( const QString &id, const QString &name, bool hasInput, bool hasOutput );
+    Q_INVOKABLE void addAttribute( const QString &id, const QString &name, bool hasInput, bool hasOutput, int maxNumberOfInputs );
     Q_INVOKABLE QVariantList getAttributes( const QString &id ) const;
     Q_INVOKABLE void setAttributeValue( const QString &id, const QString &attrName, const QVariant &val );
     Q_INVOKABLE QVariant getAttributeValue( const QString &id, const QString &attrName ) const;
