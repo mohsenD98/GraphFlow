@@ -7,6 +7,7 @@ Shape {
   width: 200
   height: 200
 
+  property var draggable
   property real c1x: 0
   property real c1y: 0
   property real c2x: 0
@@ -124,5 +125,9 @@ Shape {
     }
     draggable.parent = null;
     visible = false;
+  }
+
+  function addLink(from, to) {
+    graphController.linkModel.addLink(from.node.uuid, from.attrIndex, to.node.uuid, to.attrIndex);
   }
 }

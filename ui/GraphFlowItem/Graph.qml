@@ -58,6 +58,7 @@ Item {
     delegate: Link {
       from: nodesRepeater.getNodeById(model.fromNode).attRepeater.itemAt(model.fromAttr)
       to: nodesRepeater.getNodeById(model.toNode).attRepeater.itemAt(model.toAttr)
+      draggable: draggableItem
 
       Component.onCompleted: {
         to.boundInputs.push([model.fromNode, model.fromAttr]);
@@ -70,7 +71,7 @@ Item {
   }
 
   Item {
-    id: draggable
+    id: draggableItem
     property Socket target: null
 
     width: 1
@@ -85,21 +86,21 @@ Item {
 
     function begin() {
       active = true;
-      draggable.parent = graph;
-      prev = Qt.point(draggable.x, draggable.y);
+      draggableItem.parent = graph;
+      prev = Qt.point(draggableItem.x, draggableItem.y);
     }
 
     function update() {
       if (!active)
         return;
-      const dx = draggable.x - prev.x;
-      const dy = draggable.y - prev.y;
+      const dx = draggableItem.x - prev.x;
+      const dy = draggableItem.y - prev.y;
       for (let s of graphController.selectedNodes) {
         let node = nodesRepeater.getNodeById(s);
         node.x += dx;
         node.y += dy;
       }
-      prev = Qt.point(draggable.x, draggable.y);
+      prev = Qt.point(draggableItem.x, draggableItem.y);
     }
 
     function end() {
@@ -111,17 +112,19 @@ Item {
     id: selectionRect
     visible: false
     z: 100000
+    draggable: draggableItem
   }
 
   Cable {
     id: draggedCable
     visible: false
     z: 1000000
+    draggable: draggableItem
   }
 
   MouseArea {
     anchors.fill: parent
-    drag.target: draggable
+    drag.target: draggableItem
     drag.smoothed: false
     drag.threshold: 5
 
@@ -181,9 +184,5 @@ Item {
       }
     }
     return topNode;
-  }
-
-  function addLink(from, to) {
-    linkModel.addLink(from.node.uuid, from.attrIndex, to.node.uuid, to.attrIndex);
   }
 }

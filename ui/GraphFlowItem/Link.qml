@@ -3,6 +3,7 @@ import QtQuick
 Item {
   property Attribute from
   property Attribute to
+  property var draggable
 
   property int outX: from.node.x + from.x + from.output.x + from.output.width
   property int outY: from.node.y + from.y + from.output.y + from.output.height / 2 + 24
@@ -16,5 +17,6 @@ Item {
 
   Cable {
     anchors.fill: parent
+    draggable: parent.draggable
   }
 }

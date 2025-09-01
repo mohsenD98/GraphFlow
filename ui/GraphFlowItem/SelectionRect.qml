@@ -3,6 +3,7 @@ import ".."
 
 Item {
   property point start
+  property var draggable
 
   Rectangle {
     anchors.fill: parent

@@ -34,7 +34,7 @@ Rectangle {
   MouseArea {
     id: mouseArea
     anchors.fill: parent
-    drag.target: draggable
+    drag.target: draggableItem
     drag.smoothed: false
     drag.threshold: 0
 
