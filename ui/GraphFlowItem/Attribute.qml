@@ -1,4 +1,5 @@
 import QtQuick
+import ".."
 
 Item {
   property Item node: parent.parent
@@ -13,8 +14,9 @@ Item {
     isInput: true
     width: socketSize
     height: socketSize
-    x: -width / 2 + 1
-    y: (parent.height - height) / 2
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: parent.left
+    anchors.leftMargin: -width / 2
     z: 1
   }
 
@@ -23,8 +25,9 @@ Item {
     isInput: false
     width: socketSize
     height: socketSize
-    x: parent.width - width / 2 - 1
-    y: (parent.height - height) / 2
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.right: parent.right
+    anchors.rightMargin: -width / 2
     z: 1
   }
 
@@ -32,12 +35,11 @@ Item {
     id: text
     anchors.left: parent.left
     anchors.right: parent.right
+    anchors.verticalCenter: inputSocket.verticalCenter
     anchors.margins: 10
     horizontalAlignment: inputSocket.visible ? (outputSocket.visible ? Text.AlignHCenter : Text.AlignLeft) : Text.AlignRight
     elide: Text.ElideRight
-    x: 12
-    y: 2
-    color: "#CCC"
+    color: Theme.mainTextColor
     font.pointSize: 10
   }
 }

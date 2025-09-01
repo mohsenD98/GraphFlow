@@ -32,6 +32,8 @@ QVariant FlowNodeModel::data( const QModelIndex &index, int role ) const
       return node.color;
     case IdRole:
       return node.id;
+    case SelectedRole:
+      return node.selected;
     default:
       return QVariant();
   }
@@ -46,6 +48,7 @@ QHash<int, QByteArray> FlowNodeModel::roleNames() const
   roles[YRole] = "y";
   roles[ColorRole] = "color";
   roles[IdRole] = "id";
+  roles[SelectedRole] = "selected";
   return roles;
 }
 
@@ -133,6 +136,25 @@ void FlowNodeModel::setNodePosition( const QString &id, int x, int y )
       QModelIndex modelIndex = this->index( i );
       emit dataChanged( modelIndex, modelIndex, { XRole, YRole } );
       return;
+    }
+  }
+}
+
+void FlowNodeModel::setNodeSelected( const QString &id, bool selected )
+{
+  for ( int i = 0; i < mNodes.size(); ++i )
+  {
+    FlowNodeData &node = mNodes[i];
+    if ( node.id == id )
+    {
+      if ( node.selected == selected )
+        return;
+
+      node.selected = selected;
+
+      QModelIndex idx = this->index( i );
+      emit dataChanged( idx, idx, { SelectedRole } );
+      break;
     }
   }
 }

@@ -2,8 +2,8 @@ import QtQuick
 
 Item {
   id: graph
-  property var nodeModel: GraphController.nodeModel
-  property var linkModel: GraphController.linkModel
+  property var nodeModel: graphController.nodeModel
+  property var linkModel: graphController.linkModel
   property alias nodes: nodesRepeater
   property int topZ: 1
 
@@ -15,17 +15,17 @@ Item {
       width: 150
       name: model.name
       type: model.type
-      selected: false
+      selected: model.selected
       uuid: model.id
       nodeHeaderColor: model.color
 
       onXChanged: {
         if (loaded)
-          GraphController.nodeModel.setNodePosition(uuid, x, y);
+          graphController.nodeModel.setNodePosition(uuid, x, y);
       }
       onYChanged: {
         if (loaded)
-          GraphController.nodeModel.setNodePosition(uuid, x, y);
+          graphController.nodeModel.setNodePosition(uuid, x, y);
       }
 
       function intersects(rect) {
@@ -76,15 +76,6 @@ Item {
     width: 1
     height: 1
     Drag.active: true
-
-    Rectangle {
-      visible: false
-      color: 'transparent'
-      border.color: 'red'
-      anchors.fill: parent
-      anchors.margins: -5
-      radius: 5
-    }
   }
 
   QtObject {
@@ -103,7 +94,7 @@ Item {
         return;
       const dx = draggable.x - prev.x;
       const dy = draggable.y - prev.y;
-      for (let s of GraphController.selectedNodes) {
+      for (let s of graphController.selectedNodes) {
         let node = nodesRepeater.getNodeById(s);
         node.x += dx;
         node.y += dy;
@@ -128,7 +119,6 @@ Item {
     z: 1000000
   }
 
-  // -------------------- Mouse Area --------------------
   MouseArea {
     anchors.fill: parent
     drag.target: draggable
@@ -142,12 +132,12 @@ Item {
         toggleNodeSelection(node);
       else if (node) {
         if (!node.selected)
-          clearSelection();
-        selectNode(node);
+          graphController.clearSelection();
+        graphController.selectNode(node.uuid);
         dragSelectedNodes.begin();
       } else {
         if (!control)
-          clearSelection();
+          graphController.clearSelection();
         selectionRect.begin(Qt.point(mouseX, mouseY));
       }
     }
@@ -170,35 +160,13 @@ Item {
     }
   }
 
-  // -------------------- Functions --------------------
-  function selectNode(node) {
-    if (!node.selected) {
-      node.selected = true;
-      GraphController.selectNode(node.uuid);
-    }
-    node.z = topZ++;
-  }
-
-  function deselectNode(node) {
-    if (node.selected) {
-      node.selected = false;
-      GraphController.deselectNode(node.uuid);
-    }
-  }
-
   function toggleNodeSelection(node) {
     if (node.selected)
-      deselectNode(node);
+      graphController.deselectNode(node.uuid);
     else {
-      selectNode(node);
+      graphController.selectNode(node.uuid);
+      node.z = topZ++;
     }
-  }
-
-  function clearSelection() {
-    for (let s of GraphController.selectedNodes) {
-      nodesRepeater.getNodeById(s).selected = false;
-    }
-    GraphController.clearSelection();
   }
 
   function getNodeAtPosition(point) {

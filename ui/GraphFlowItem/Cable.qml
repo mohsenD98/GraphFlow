@@ -67,11 +67,11 @@ Shape {
   }
 
   function begin(socket, pos) {
-    clearSelection();
+    graphController.clearSelection();
     if (socket.isInput && socket.attribute.boundInputs.length === 1) {
       const to = socket.attribute.node;
       const from = socket.attribute.boundInputs[0];
-      GraphController.removeLink(from[0], from[1], to.uuid, socket.attribute.attrIndex);
+      graphController.removeLink(from[0], from[1], to.uuid, socket.attribute.attrIndex);
       socket.attribute.boundInputs.pop();
       let tmp = socket;
       socket = nodesRepeater.getNodeById(from[0]).attRepeater.itemAt(from[1]).output;

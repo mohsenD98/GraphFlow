@@ -1,5 +1,4 @@
 #include "GraphController.h"
-#include "src/FlowExecutor.h"
 
 #include <QFile>
 #include <QJsonArray>
@@ -15,8 +14,7 @@ GraphController::GraphController( QObject *parent )
 
 void GraphController::runFlow()
 {
-  FlowExecutor executor( mFlowNodeModel, mFlowLinkModel );
-  executor.run();
+  // run
 }
 
 void GraphController::removeNodes( const QList<QString> &nodeIdsToRemove )
@@ -73,6 +71,7 @@ void GraphController::selectNode( const QString &id )
   if ( !mSelectedNodes.contains( id ) )
   {
     mSelectedNodes.append( id );
+    mFlowNodeModel->setNodeSelected( id, true );
     emit selectedNodesChanged();
   }
 }
@@ -81,18 +80,21 @@ void GraphController::deselectNode( const QString &id )
 {
   if ( mSelectedNodes.removeOne( id ) )
   {
+    mFlowNodeModel->setNodeSelected( id, false );
     emit selectedNodesChanged();
   }
 }
 
 void GraphController::clearSelection()
 {
-  if ( !mSelectedNodes.isEmpty() )
+  for ( const QString &id : mSelectedNodes )
   {
-    mSelectedNodes.clear();
-    emit selectedNodesChanged();
+    deselectNode( id );
   }
+  mSelectedNodes.clear();
+  emit selectedNodesChanged();
 }
+
 
 QList<QString> GraphController::selectedNodes() const { return mSelectedNodes; }
 

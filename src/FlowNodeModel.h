@@ -15,6 +15,7 @@ struct FlowNodeData
     QString id;
     QString name;
     QString type;
+    bool selected = false;
     int x;
     int y;
     QString color;
@@ -33,7 +34,8 @@ class FlowNodeModel : public QAbstractListModel
       XRole,
       YRole,
       ColorRole,
-      IdRole
+      IdRole,
+      SelectedRole
     };
 
     explicit FlowNodeModel( QObject *parent = nullptr );
@@ -48,11 +50,11 @@ class FlowNodeModel : public QAbstractListModel
     Q_INVOKABLE FlowNodeData getNode( const QString &id ) const;
     Q_INVOKABLE FlowNodeData getNode( int id ) const;
     Q_INVOKABLE void setNodePosition( const QString &id, int x, int y );
-
     Q_INVOKABLE void addAttribute( const QString &id, const QString &name, bool hasInput, bool hasOutput );
     Q_INVOKABLE QVariantList getAttributes( const QString &id ) const;
     Q_INVOKABLE void setAttributeValue( const QString &id, const QString &attrName, const QVariant &val );
     Q_INVOKABLE QVariant getAttributeValue( const QString &id, const QString &attrName ) const;
+    void setNodeSelected( const QString &id, bool selected );
 
   signals:
     void attributesChanged( const QString &id );

@@ -47,7 +47,6 @@ qt_add_qml_module(GraphFlow
        ui/data/icons/add_24dp.svg
        ui/data/icons/calculate_24dp.svg
        ui/data/icons/database_24dp.svg
-       SOURCES src/FlowExecutor.h src/FlowExecutor.cpp
 
 )
 

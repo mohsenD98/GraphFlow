@@ -8,7 +8,7 @@ Item {
   focus: true
   Keys.onPressed: function (event) {
     if (event.key === Qt.Key_Delete) {
-      GraphController.removeNodes(GraphController.selectedNodes);
+      graphController.removeNodes(graphController.selectedNodes);
     }
   }
 

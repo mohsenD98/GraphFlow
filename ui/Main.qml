@@ -4,17 +4,17 @@ import "GraphFlowItem"
 
 ApplicationWindow {
   id: root
-  width: 1200
-  height: 800
+  width: 1500
+  height: 850
   visible: true
   color: Theme.bgColor
 
   Component.onCompleted: {
-    GraphController.loadFlow("lastFlow.json");
+    graphController.loadFlow("lastFlow.json");
   }
 
   Component.onDestruction: {
-    GraphController.saveFlow("lastFlow.json");
+    graphController.saveFlow("lastFlow.json");
   }
 
   NodeList {

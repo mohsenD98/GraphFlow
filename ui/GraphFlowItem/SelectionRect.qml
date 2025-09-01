@@ -55,7 +55,7 @@ Item {
     for (var i = 0; i < nodesRepeater.count; ++i) {
       const node = nodesRepeater.itemAt(i);
       if (node.intersects(rect)) {
-        node.selected = true;
+        graphController.selectNode(node.uuid);
         node.z = topZ++;
       }
     }

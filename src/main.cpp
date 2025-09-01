@@ -21,7 +21,7 @@ int main( int argc, char *argv[] )
   qmlRegisterType<NodeLibraryProxyModel>( "GraphFlow", 1, 0, "NodeLibraryProxyModel" );
 
   QQmlApplicationEngine engine;
-  engine.rootContext()->setContextProperty( "GraphController", &controller );
+  engine.rootContext()->setContextProperty( "graphController", &controller );
 
   const QUrl url( QStringLiteral( "qrc:/graphFlow/ui/Main.qml" ) );
   QObject::connect(
