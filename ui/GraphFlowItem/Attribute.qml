@@ -1,7 +1,7 @@
 import QtQuick
 
 Item {
-  property Item node: parent
+  property Item node: parent.parent
   property alias text: text.text
   property alias input: inputSocket
   property alias output: outputSocket

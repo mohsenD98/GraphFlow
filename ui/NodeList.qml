@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQml.Models
-import GraphFlow
+import GraphFlow 1.0
 
 Rectangle {
   signal addNodeById(var node)

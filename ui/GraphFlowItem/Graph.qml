@@ -5,7 +5,6 @@ Item {
   property var nodeModel: GraphController.nodeModel
   property var linkModel: GraphController.linkModel
   property alias nodes: nodesRepeater
-  property var selectedNodes: []
   property int topZ: 1
 
   Repeater {
@@ -16,7 +15,6 @@ Item {
       width: 150
       name: model.name
       type: model.type
-      nodeIndex: index
       selected: false
       uuid: model.id
       nodeHeaderColor: model.color
@@ -50,7 +48,7 @@ Item {
           return itemAt(i);
         }
       }
-      return null; // اگه چیزی پیدا نشد
+      return null;
     }
   }
 
@@ -89,7 +87,7 @@ Item {
     }
   }
 
-  Item {
+  QtObject {
     id: dragSelectedNodes
     property bool active: false
     property point prev
@@ -105,9 +103,10 @@ Item {
         return;
       const dx = draggable.x - prev.x;
       const dy = draggable.y - prev.y;
-      for (let s of selectedNodes) {
-        s.x += dx;
-        s.y += dy;
+      for (let s of GraphController.selectedNodes) {
+        let node = nodesRepeater.getNodeById(s);
+        node.x += dx;
+        node.y += dy;
       }
       prev = Qt.point(draggable.x, draggable.y);
     }
@@ -121,107 +120,12 @@ Item {
     id: selectionRect
     visible: false
     z: 100000
-    property point start
-
-    function begin(pos) {
-      visible = true;
-      start = pos;
-      draggable.parent = graph;
-      draggable.x = pos.x;
-      draggable.y = pos.y;
-      update();
-    }
-
-    function update() {
-      const rect = getRect();
-      x = rect.x;
-      y = rect.y;
-      width = rect.width;
-      height = rect.height;
-    }
-
-    function end() {
-      if (visible) {
-        visible = false;
-        draggable.parent = null;
-        const rect = getRect();
-        selectNodesInRect(rect);
-      }
-    }
-
-    function getRect() {
-      const x1 = Math.min(draggable.x, start.x);
-      const x2 = Math.max(draggable.x, start.x);
-      const y1 = Math.min(draggable.y, start.y);
-      const y2 = Math.max(draggable.y, start.y);
-      return Qt.rect(x1, y1, x2 - x1, y2 - y1);
-    }
   }
 
   Cable {
     id: draggedCable
     visible: false
     z: 1000000
-
-    function begin(socket, pos) {
-      clearSelection();
-      if (socket.isInput && socket.attribute.boundInputs.length == 1) {
-        const to = socket.attribute.node;
-        const from = socket.attribute.boundInputs[0];
-        GraphController.removeLink(from[0], from[1], to.uuid, socket.attribute.attrIndex);
-        socket.attribute.boundInputs.pop();
-        let tmp = socket;
-        socket = nodesRepeater.getNodeById(from[0]).attRepeater.itemAt(from[1]).output;
-        pos = mapToItem(socket, mapFromItem(tmp, pos));
-      }
-      visible = true;
-      draggable.Drag.keys = [100];
-      draggable.parent = socket;
-      draggable.x = pos.x;
-      draggable.y = pos.y;
-      update();
-    }
-
-    function update() {
-      updating = true;
-      let socket = draggable.parent;
-      if (!socket)
-        return;
-      let p1 = parent.mapFromItem(draggable, -draggable.x, -draggable.y + socket.height / 2);
-      let p2 = parent.mapFromItem(draggable, 0, 0);
-      // snap to target
-      if (draggable.target) {
-        p2 = parent.mapFromItem(draggable.target, 0, socket.height / 2);
-      }
-
-      // swap when connecting input
-      if (socket.isInput) {
-        let tmp = p1;
-        p1 = p2;
-        p2 = tmp;
-      }
-      p1.x += socket.width;
-      x = p1.x;
-      y = p1.y;
-      width = p2.x - p1.x;
-      height = p2.y - p1.y;
-    }
-
-    function end() {
-      updating = false;
-      if (draggable.target) {
-        let from = draggable.parent.attribute;
-        let to = draggable.target.attribute;
-        if (draggable.parent.isInput) {
-          let tmp = to;
-          to = from;
-          from = tmp;
-        }
-        addLink(from, to);
-      }
-      draggable.parent = null;
-      visible = false;
-    }
   }
 
   // -------------------- Mouse Area --------------------
@@ -260,9 +164,8 @@ Item {
 
     onDoubleClicked: {
       const node = getNodeAtPosition(Qt.point(mouseX, mouseY));
-      if (node)
-      // attributeDialog.openForNode(node);
-      {
+      if (node) {
+        console.log(`double click on node = ${node}`);
       }
     }
   }
@@ -271,7 +174,7 @@ Item {
   function selectNode(node) {
     if (!node.selected) {
       node.selected = true;
-      selectedNodes.push(node);
+      GraphController.selectNode(node.uuid);
     }
     node.z = topZ++;
   }
@@ -279,7 +182,7 @@ Item {
   function deselectNode(node) {
     if (node.selected) {
       node.selected = false;
-      selectedNodes.splice(selectedNodes.indexOf(node), 1);
+      GraphController.deselectNode(node.uuid);
     }
   }
 
@@ -292,18 +195,10 @@ Item {
   }
 
   function clearSelection() {
-    for (let s of selectedNodes)
-      s.selected = false;
-    selectedNodes.length = 0;
-  }
-
-  function selectNodesInRect(rect) {
-    for (var i = 0; i < nodesRepeater.count; ++i) {
-      const node = nodesRepeater.itemAt(i);
-      if (node.intersects(rect)) {
-        selectNode(node);
-      }
+    for (let s of GraphController.selectedNodes) {
+      nodesRepeater.getNodeById(s).selected = false;
     }
+    GraphController.clearSelection();
   }
 
   function getNodeAtPosition(point) {

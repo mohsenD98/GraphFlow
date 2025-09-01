@@ -10,6 +10,7 @@ class GraphController : public QObject
     Q_OBJECT
     Q_PROPERTY( FlowNodeModel *nodeModel READ nodeModel CONSTANT )
     Q_PROPERTY( FlowLinkModel *linkModel READ linkModel CONSTANT )
+    Q_PROPERTY( QList<QString> selectedNodes READ selectedNodes NOTIFY selectedNodesChanged )
 
   public:
     explicit GraphController( QObject *parent = nullptr );
@@ -25,7 +26,17 @@ class GraphController : public QObject
     Q_INVOKABLE bool saveFlow( const QString &path );
     Q_INVOKABLE bool loadFlow( const QString &path );
 
+    // Selected nodes
+    Q_INVOKABLE void selectNode( const QString &id );
+    Q_INVOKABLE void deselectNode( const QString &id );
+    Q_INVOKABLE void clearSelection();
+    QList<QString> selectedNodes() const;
+
+  signals:
+    void selectedNodesChanged();
+
   private:
     FlowNodeModel *mFlowNodeModel;
     FlowLinkModel *mFlowLinkModel;
+    QList<QString> mSelectedNodes;
 };

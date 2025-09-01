@@ -45,7 +45,6 @@ void GraphController::removeNodes( const QList<QString> &nodeIdsToRemove )
   }
 }
 
-
 void GraphController::removeLink( const QString &fromNode, int fromAttr, const QString &toNode, int toAttr )
 {
   for ( int i = 0; i < mFlowLinkModel->rowCount(); ++i )
@@ -69,6 +68,33 @@ void GraphController::clearGraph()
   mFlowLinkModel->clear();
 }
 
+void GraphController::selectNode( const QString &id )
+{
+  if ( !mSelectedNodes.contains( id ) )
+  {
+    mSelectedNodes.append( id );
+    emit selectedNodesChanged();
+  }
+}
+
+void GraphController::deselectNode( const QString &id )
+{
+  if ( mSelectedNodes.removeOne( id ) )
+  {
+    emit selectedNodesChanged();
+  }
+}
+
+void GraphController::clearSelection()
+{
+  if ( !mSelectedNodes.isEmpty() )
+  {
+    mSelectedNodes.clear();
+    emit selectedNodesChanged();
+  }
+}
+
+QList<QString> GraphController::selectedNodes() const { return mSelectedNodes; }
 
 bool GraphController::saveFlow( const QString &path )
 {

@@ -15,8 +15,8 @@ Rectangle {
     anchors.margins: -4
     keys: [100]
     onEntered: drag => {
-      let fromSocket = drag.source.parent;
-      if (isInput == fromSocket.isInput)
+      const fromSocket = drag.source.parent;
+      if (isInput === fromSocket.isInput)
         return;
       if (!canLink(isInput ? fromSocket.attribute : attribute, isInput ? attribute : fromSocket.attribute))
         return;
@@ -24,7 +24,7 @@ Rectangle {
       draggedCable.update();
     }
     onExited: {
-      if (drag.source.target == socket) {
+      if (drag.source.target === socket) {
         drag.source.target = null;
         draggedCable.update();
       }
@@ -50,6 +50,6 @@ Rectangle {
   }
 
   function canLink(fromAttribute, toAttribute) {
-    return (fromAttribute && toAttribute && fromAttribute.output.visible && toAttribute.input.visible && toAttribute.boundInputs.length == 0 && fromAttribute.node != toAttribute.node);
+    return (fromAttribute && toAttribute && fromAttribute.output.visible && toAttribute.input.visible && toAttribute.boundInputs.length === 0 && fromAttribute.node != toAttribute.node);
   }
 }

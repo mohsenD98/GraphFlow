@@ -8,19 +8,13 @@ Item {
   focus: true
   Keys.onPressed: function (event) {
     if (event.key === Qt.Key_Delete) {
-      let nodes = [];
-      for (let s in graph.selectedNodes) {
-        nodes.push(graph.selectedNodes[s].uuid);
-      }
-      GraphController.removeNodes(nodes);
+      GraphController.removeNodes(GraphController.selectedNodes);
     }
   }
 
   Background {
     anchors.fill: parent
   }
-
-  property real scaleFactor: 1.0
 
   MouseArea {
     anchors.fill: parent
@@ -32,13 +26,14 @@ Item {
     onWheel: function (event) {
       if (event.modifiers & Qt.ControlModifier) {
         event.accepted = true;
-        let newScale = scaleFactor;
-        if (event.angleDelta.y > 0)
+        let newScale = graph.scaleFactor;
+        if (event.angleDelta.y > 0) {
           newScale += zoomStep;
-        else
+        } else {
           newScale -= zoomStep;
+        }
         newScale = Math.min(Math.max(newScale, minScale), maxScale);
-        scaleFactor = newScale;
+        graph.scaleFactor = newScale;
       }
     }
   }
@@ -51,19 +46,21 @@ Item {
     x: 0
     y: 0
 
+    property real scaleFactor: 1.0
+
     transform: Scale {
       origin.x: 0
       origin.y: 0
-      xScale: scaleFactor
-      yScale: scaleFactor
+      xScale: graph.scaleFactor
+      yScale: graph.scaleFactor
     }
   }
 
   function addNode(nodeData) {
     const currentCount = graph.nodeModel.rowCount();
-    let x = nodeData.x !== undefined ? nodeData.x : (10 + (currentCount * 300)) % root.width;
-    let y = nodeData.y !== undefined ? nodeData.y : 10;
-    let id = graph.nodeModel.addNode(nodeData.name, nodeData.type, x, y, nodeData.color);
+    const x = nodeData.x !== undefined ? nodeData.x : (10 + (currentCount * 300)) % root.width;
+    const y = nodeData.y !== undefined ? nodeData.y : 10;
+    const id = graph.nodeModel.addNode(nodeData.name, nodeData.type, x, y, nodeData.color);
     if (nodeData.attributes) {
       for (var i = 0; i < nodeData.attributes.length; i++) {
         const attr = nodeData.attributes[i];

@@ -1,36 +1,20 @@
-import QtQuick 2.12
+import QtQuick
+import ".."
 
 Rectangle {
   id: root
+  height: content.height + header.height
+
   property alias name: text.text
-  property int nodeIndex: -1
   property string uuid: ""
-  property var user
   property bool selected
   property alias attRepeater: attributesRepeater
   property string type
-
   property color nodeHeaderColor
 
   color: selected ? "#555" : "#444"
-  border.color: selected ? "#FC0" : "#222"
+  border.color: selected ? Theme.selectionColor : "#222"
   radius: 8
-
-  Component.onCompleted: {
-    updateHeight();
-  }
-
-  function intersects(rect) {
-    return !(rect.x > x + width || rect.y > y + height || rect.x + rect.width < x || rect.y + rect.height < y);
-  }
-
-  function updateHeight() {
-    root.height = 30;
-    if (attributesRepeater.count > 0) {
-      const last = attributesRepeater.itemAt(attributesRepeater.count - 1);
-      root.height = last.y + last.height + 4;
-    }
-  }
 
   Rectangle {
     id: header
@@ -57,33 +41,36 @@ Rectangle {
       height: 1
       color: root.border.color
     }
+
+    Text {
+      id: text
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.margins: 8
+      elide: Text.ElideRight
+      color: Theme.mainTextColor
+      font.bold: true
+      font.pointSize: 10
+    }
   }
 
-  Text {
-    id: text
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.margins: 8
-    elide: Text.ElideRight
-    x: 6
-    y: 4
-    color: "#FFF"
-    font.bold: true
-    font.pointSize: 10
-  }
+  Column {
+    id: content
+    width: parent.width
+    anchors.top: header.bottom
 
-  Repeater {
-    id: attributesRepeater
-    delegate: Attribute {
-      x: 0
-      y: 25 + index * 25
-      width: parent.width
-      height: 24
-      text: modelData.name
-      input.visible: modelData.hasInput
-      output.visible: modelData.hasOutput
+    Repeater {
+      id: attributesRepeater
+      delegate: Attribute {
+        width: parent.width
+        height: 24
+        text: modelData.name
+        input.visible: modelData.hasInput
+        output.visible: modelData.hasOutput
 
-      property int attrIndex: index
+        property int attrIndex: index
+      }
     }
   }
 
@@ -92,8 +79,11 @@ Rectangle {
     function onAttributesChanged(id) {
       if (id === uuid) {
         attributesRepeater.model = nodeModel.getAttributes(id);
-        updateHeight();
       }
     }
+  }
+
+  function intersects(rect) {
+    return !(rect.x > x + width || rect.y > y + height || rect.x + rect.width < x || rect.y + rect.height < y);
   }
 }
