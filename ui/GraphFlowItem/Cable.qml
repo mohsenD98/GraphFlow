@@ -17,6 +17,7 @@ Shape {
   // نقطه انتهای منحنی، ابتدای قاعده مثلث
   property real endX: width - arrowSize
   property real endY: height
+  property bool updating: false
 
   Component.onCompleted: updatePoints()
   onWidthChanged: updatePoints()
@@ -32,7 +33,7 @@ Shape {
   // منحنی اصلی (تا ابتدای قاعده مثلث)
   ShapePath {
     strokeWidth: 1
-    strokeColor: Theme.linkColor
+    strokeColor: updating ? Theme.selectionColor : Theme.linkColor
     fillColor: "transparent"
     capStyle: ShapePath.RoundCap
 
@@ -49,8 +50,8 @@ Shape {
   // فلش انتهای منحنی به صورت مثلث توپر (نوک فلش در انتهای شکل)
   ShapePath {
     strokeWidth: 1
-    strokeColor: Theme.linkColor
-    fillColor: Theme.linkColor
+    strokeColor: updating ? Theme.selectionColor : Theme.linkColor
+    fillColor: updating ? Theme.selectionColor : Theme.linkColor
 
     PathMove {
       x: width

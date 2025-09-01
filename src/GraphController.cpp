@@ -19,28 +19,6 @@ void GraphController::runFlow()
   executor.run();
 }
 
-void GraphController::removeNode( int index )
-{
-  if ( index < 0 || index >= mFlowNodeModel->rowCount() )
-    return;
-
-  QList<int> linksToRemove;
-  for ( int i = 0; i < mFlowLinkModel->rowCount(); ++i )
-  {
-    const int link = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromNodeRole ).toInt();
-    const int toNode = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToNodeRole ).toInt();
-    if ( link == index || toNode == index )
-    {
-      linksToRemove.append( i );
-    }
-  }
-  std::sort( linksToRemove.begin(), linksToRemove.end(), std::greater<int>() );
-  for ( int idx : linksToRemove )
-    mFlowLinkModel->removeLink( idx );
-
-  mFlowNodeModel->removeNode( index );
-}
-
 void GraphController::removeNodes( const QList<int> &nodesToRemove )
 {
   if ( nodesToRemove.isEmpty() )
@@ -67,6 +45,23 @@ void GraphController::removeNodes( const QList<int> &nodesToRemove )
     if ( idx >= 0 && idx < mFlowNodeModel->rowCount() )
     {
       mFlowNodeModel->removeNode( idx );
+    }
+  }
+}
+
+void GraphController::removeLink( int fromNode, int fromAttr, int toNode, int toAttr )
+{
+  for ( int i = 0; i < mFlowLinkModel->rowCount(); ++i )
+  {
+    int fNode = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromNodeRole ).toInt();
+    int fAttr = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::FromAttributeRole ).toInt();
+    int tNode = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToNodeRole ).toInt();
+    int tAttr = mFlowLinkModel->data( mFlowLinkModel->index( i ), FlowLinkModel::ToAttributeRole ).toInt();
+
+    if ( fNode == fromNode && fAttr == fromAttr && tNode == toNode && tAttr == toAttr )
+    {
+      mFlowLinkModel->removeLink( i );
+      break;
     }
   }
 }

@@ -17,8 +17,8 @@ class GraphController : public QObject
     FlowNodeModel *nodeModel() const { return mFlowNodeModel; }
     FlowLinkModel *linkModel() const { return mFlowLinkModel; }
 
-    Q_INVOKABLE void removeNode( int index );
     Q_INVOKABLE void removeNodes( const QList<int> &nodesToRemove );
+    Q_INVOKABLE void removeLink( int fromNode, int fromAttr, int toNode, int toAttr );
     Q_INVOKABLE void clearGraph();
     Q_INVOKABLE void runFlow();
 

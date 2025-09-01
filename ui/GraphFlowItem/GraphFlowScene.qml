@@ -71,11 +71,6 @@ Item {
   //   shadowColor: "black"
   //   shadowScale: 1
   // }
-  Button {
-    text: "Run Flow"
-    onClicked: GraphController.runFlow()
-  }
-
   function addNode(nodeData) {
     const currentCount = graph.nodeModel.rowCount();
     let x = nodeData.x !== undefined ? nodeData.x : (10 + (currentCount * 300)) % root.width;

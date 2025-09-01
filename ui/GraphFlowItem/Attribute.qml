@@ -6,7 +6,6 @@ Item {
   property alias input: inputSocket
   property alias output: outputSocket
   property var boundInputs: []
-  property var boundOutputs: []
   property int socketSize: 12
 
   Socket {
