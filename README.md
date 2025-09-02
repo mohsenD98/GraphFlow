@@ -1,5 +1,7 @@
 # GraphFlow
 
+**If you found this project useful, please give it a star!** ⭐
+
 GraphFlow is a **node-based graph editor** built with Qt/QML and C++. It allows you to visually create, connect, and manage computational flows using a flexible, interactive UI. This is an early version providing core graph editing features, with extensibility for custom node types and logic.
 
 <img width="1320" height="839" alt="image" src="https://github.com/user-attachments/assets/40e16214-e9cb-46e3-ac06-d1789f194fef" />
