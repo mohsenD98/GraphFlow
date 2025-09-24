@@ -9,27 +9,34 @@ Canvas {
 
   onPaint: {
     var ctx = getContext("2d");
+    var dpr = Canvas.devicePixelRatio;
+    gridBackground.width = width * dpr;
+    gridBackground.height = height * dpr;
+    ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, width, height);
     ctx.strokeStyle = lineColor;
     ctx.lineWidth = 1;
-
-    // Vertical lines
     for (var x = 0; x < width; x += gridSize) {
       ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
+      ctx.moveTo(x + 0.5, 0);
+      ctx.lineTo(x + 0.5, height);
       ctx.stroke();
     }
-
-    // Horizontal lines
     for (var y = 0; y < height; y += gridSize) {
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(width, y + 0.5);
       ctx.stroke();
     }
   }
 
   onWidthChanged: requestPaint()
   onHeightChanged: requestPaint()
+
+  Connections {
+    target: Theme
+    function onIsDarkThemeChanged() {
+      requestPaint();
+    }
+  }
 }

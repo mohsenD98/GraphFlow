@@ -8,15 +8,18 @@ Rectangle {
   signal addNodeById(var node)
 
   ColumnLayout {
+    anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.margins: 4
+    anchors.margins: 10
     spacing: 4
 
     TextField {
+      Layout.preferredHeight: 40
       Layout.fillWidth: true
       placeholderText: "Search in name or description"
       Layout.alignment: Qt.AlignTop
+      font.pixelSize: 12
       onTextChanged: {
         nodeProxy.filterText = text;
       }

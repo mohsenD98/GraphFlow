@@ -36,4 +36,25 @@ ApplicationWindow {
     anchors.bottom: parent.bottom
     clip: true
   }
+
+  Row {
+    anchors.top: parent.top
+    anchors.right: parent.right
+    spacing: 8
+
+    Text {
+      text: "Dark theme"
+      color: Theme.mainTextColor
+      anchors.verticalCenter: parent.verticalCenter
+    }
+
+    Switch {
+      anchors.margins: 8
+      anchors.verticalCenter: parent.verticalCenter
+
+      onCheckedChanged: {
+        Theme.isDarkTheme = checked;
+      }
+    }
+  }
 }

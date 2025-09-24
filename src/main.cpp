@@ -11,7 +11,7 @@
 int main( int argc, char *argv[] )
 {
   QGuiApplication app( argc, argv );
-  QQuickStyle::setStyle( "FluentWinUI3" );
+  QQuickStyle::setStyle( "Material" );
 
   GraphController controller;
 

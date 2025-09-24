@@ -5,7 +5,7 @@ Rectangle {
   property Item attribute: parent
   property bool isInput: false
 
-  color: isInput ? "#2196F3" : "#4CAF50"
+  color: isInput ? "#f0e64a" : "#ee7913"
   border.color: "#222"
   radius: width
 

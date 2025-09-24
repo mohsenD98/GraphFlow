@@ -7,7 +7,7 @@
       {"name": "output", "hasInput": false, "hasOutput": true, "maxNumberOfInputs": 1}
     ],
     "values": {"value": 0},
-    "color": "#FFC107",
+    "color": "#f0e64a",
     "icon": "ui/data/icons/database_24dp.svg"
   },
   {
@@ -20,7 +20,7 @@
       {"name": "output", "hasInput": false, "hasOutput": true, "maxNumberOfInputs": 1}
     ],
     "values": {"factor": 1},
-    "color": "#4CAF50",
+    "color": "#6a7b26",
     "icon": "ui/data/icons/calculate_24dp.svg"
   },
   {
@@ -33,7 +33,7 @@
       {"name": "output", "hasInput": false, "hasOutput": true, "maxNumberOfInputs": 1}
     ],
     "values": {},
-    "color": "#03A9F4",
+    "color": "#92af22",
     "icon": "ui/data/icons/add_24dp.svg"
   },
   {
@@ -45,7 +45,7 @@
       {"name": "output", "hasInput": false, "hasOutput": true, "maxNumberOfInputs": 1}
     ],
     "values": {"threshold": 5},
-    "color": "#E91E63",
+    "color": "#589632",
     "icon": "ui/data/icons/filter_tilt_shift_24dp.svg"
   },
   {
@@ -56,7 +56,7 @@
       {"name": "input", "hasInput": true, "hasOutput": false, "maxNumberOfInputs": 3}
     ],
     "values": {"lastValue": null},
-    "color": "#9C27B0",
+    "color": "#ee7913",
     "icon": "ui/data/icons/browse_activity_24dp.svg"
   }
 ]

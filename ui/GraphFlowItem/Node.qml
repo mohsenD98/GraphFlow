@@ -12,9 +12,9 @@ Rectangle {
   property string type
   property color nodeHeaderColor
 
-  color: selected ? "#555" : "#444"
-  border.color: selected ? Theme.selectionColor : "#222"
-  radius: 8
+  color: selected ? Theme.nodeSelected : Theme.nodeNormal
+  border.color: selected ? Theme.selectionColor : Theme.isDarkTheme ? "#222" : "#2e20211f"
+  radius: 4
 
   Rectangle {
     id: header
@@ -33,6 +33,7 @@ Rectangle {
       anchors.bottom: parent.bottom
       color: parent.color
     }
+
     Rectangle {
       anchors.left: parent.left
       anchors.right: parent.right
